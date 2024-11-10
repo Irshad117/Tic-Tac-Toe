@@ -1,0 +1,37 @@
+
+*{
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 3em;
+    color: rgba(0, 0, 255, 0.6);
+}
+
+.board{
+    
+    width: 75%;
+    height: 600px;
+    border: 2px solid black;
+    align-items: center;
+    justify-content: center;
+    margin-left: 12.5%;
+    display: flex;
+}
+
+.cell{
+    margin: 10px;
+    width: 200px;
+    height: 185px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.cell:hover{
+    background-color: rgba(0, 0, 255, 0.2);
+}
