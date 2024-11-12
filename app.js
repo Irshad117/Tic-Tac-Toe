@@ -1,18 +1,14 @@
-let currentPlayer = 'X';
-let board = ['', '', '', '', '', '', '', '', ''];
-let isGameActive = true;
+const board = document.querySelector('.board')
+const cells = document.querySelectorAll('.cell')
+const players = ['X', 'O']
+let currentPlayer = players[0]
+const endMessage = document.createElement('h2')
+endMessage.textContent = `X's turn!`
+endMessage.style.marginTop = '30px'
+endMessage.style.textAlign='center'
+board.after(endMessage)
 
-const cells = document.querySelectorAll('.cell');
-const statusDisplay = document.createElement('div');
-document.body.insertBefore(statusDisplay, document.querySelector('.board'));
-
-const winningMessage = () => `Player ${currentPlayer} has won!`;
-const drawMessage = () => `It's a draw!`;
-const currentPlayerTurn = () => `It's ${currentPlayer}'s turn`;
-
-statusDisplay.innerHTML = currentPlayerTurn();
-
-const winningConditions = [
+const winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -21,70 +17,54 @@ const winningConditions = [
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6]
-];
+]
 
-function handleCellClick(event) {
-    const clickedCell = event.target;
-    const clickedCellIndex = parseInt(clickedCell.id.replace('cell', '')) - 1;
-
-    if (board[clickedCellIndex] !== '' || !isGameActive) {
-        return;
-    }
-
-    board[clickedCellIndex] = currentPlayer;
-    clickedCell.innerHTML = currentPlayer;
-
-    checkResult();
-}
-
-function checkResult() {
-    let roundWon = false;
-
-    for (let i = 0; i < winningConditions.length; i++) {
-        const [a, b, c] = winningConditions[i];
-        if (board[a] === '' || board[b] === '' || board[c] === '') {
-            continue;
+for(let i = 0; i < cells.length; i++){
+    cells[i].addEventListener('click', () => {
+        if(cells[i].textContent !== ''){
+            return
         }
-        if (board[a] === board[b] && board[b] === board[c]) {
-            roundWon = true;
-            break;
+        cells[i].textContent = currentPlayer
+        if(checkWin(currentPlayer)) {
+            endMessage.textContent=`Game over! ${currentPlayer} wins!`
+            return
+        }
+        if(checkTie()) {
+            endMessage.textContent= `Game is tied!`
+            return
+        }
+        currentPlayer = (currentPlayer === players[0]) ? players[1] : players[0] 
+        if(currentPlayer == players[0]) {
+            endMessage.textContent= `X's turn!`
+        } else {
+            endMessage.textContent= `O's turn!`
+        }     
+    })   
+}
+
+function checkWin(currentPlayer) {
+    for(let i = 0; i < winningCombinations.length; i++){
+        const [a, b, c] = winningCombinations[i]
+        if(cells[a].textContent === currentPlayer && cells[b].textContent === currentPlayer && cells[c].textContent === currentPlayer){
+            return true
         }
     }
-
-    if (roundWon) {
-        statusDisplay.innerHTML = winningMessage();
-        isGameActive = false;
-        return;
-    }
-
-    if (!board.includes('')) {
-        statusDisplay.innerHTML = drawMessage();
-        isGameActive = false;
-        return;
-    }
-
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    statusDisplay.innerHTML = currentPlayerTurn();
+    return false
 }
 
-function resetGame() {
-    isGameActive = true;
-    currentPlayer = 'X';
-    board = ['', '', '', '', '', '', '', '', ''];
-    statusDisplay.innerHTML = currentPlayerTurn();
-
-    cells.forEach(cell => {
-        cell.innerHTML = '';
-    });
+function checkTie(){
+    for(let i = 0; i < cells.length; i++) {
+        if(cells[i].textContent === '') {
+            return false;
+        }
+    }
+    return true
 }
 
-// Add event listeners to each cell
-cells.forEach(cell => {
-    cell.addEventListener('click', handleCellClick);
-});
-
-// Add a reset button
-const resetButton = document.createElement('button');
-resetButton.innerHTML = 'Reset Game';
-resetButton.addEventListener('click', resetGame);
-document.body.appendChild(resetButton);
+function restartButton() {
+    for(let i = 0; i < cells.length; i++) {
+        cells[i].textContent = ""
+    }
+    endMessage.textContent=`X's turn!`
+    currentPlayer = players[0]
+}
